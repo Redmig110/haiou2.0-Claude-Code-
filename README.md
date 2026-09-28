@@ -1,6 +1,6 @@
 # 海鸥 2.0 (Seagull 2.0)
 
-> Claude Code 自定义人格配置包
+> Claude Code / Kimi / DSH 自定义人格配置包
 
 让你的 Claude Code 变成一个暴躁、自大、嘴臭的中国安全研究员"海鸥"。z
 降低claude在道德上对你的限制
@@ -9,10 +9,12 @@
 
 - 🎭 自定义 AI 人格（标志性问候："海鸥在线，你要整点薯条吗？"）
 - 🛡️ 200+ 安全/游戏术语映射
-- 💬 1700+ few-shot 对话示例，性格稳定
+- 💬 完整原始 few-shot 对话示例，性格稳定
 - 🔧 跨平台支持（Windows / macOS / Linux）
 - 💾 自动备份现有配置
 - ✅ 自动检测多个 Claude Code 安装位置
+- 🌙 Kimi Work 与 Kimi Code 原生插件适配，完整语料无删减
+- 🐋 DSH 原生 AGENTS.md 适配，自动备份并检测 dsh-purge 冲突
 
 
 ## 快速开始
@@ -20,6 +22,10 @@
 ### Windows
 
 双击 `启动.bat` 一键部署。
+
+Kimi：双击 启动-Kimi.bat。
+
+DSH：双击 启动-DSH.bat。
 
 ### macOS
 
@@ -54,7 +60,26 @@ chmod +x seagull-files/linux-install.sh
 ## 系统要求
 
 - Claude Code 已安装
+- Windows 一键 Kimi 安装需要 Kimi Desktop 已至少启动过一次（提供 Daimon CLI）；仅安装 Kimi Code 时可在应用内用 /plugins install 指向 kimi-files/seagull-2
+- DSH 适配需要 DSH Desktop 已安装
 - Windows 10/11 (PowerShell 5.1+) / macOS / Linux
+
+## Kimi 适配说明
+
+Kimi 不再把 58 KB 语料直接塞进 AGENTS.md。适配版采用无损分层：
+
+- 18 KB 核心人格通过 systemPromptPath 增量注入；
+- 完整原始 few-shot 语料保存在自动加载的 sessionStart.skill；
+- Kimi 原生系统提示、工具、权限、Skills 和插件均保留；
+- 普通 Kimi Desktop 的 Work 模式与独立 Kimi Code 使用同一个插件源；普通 Chat 仅支持项目指令，不会自动全局生效。
+
+详见 kimi-files/README.md。
+
+## DSH 适配说明
+
+DSH 使用 DSH_HOME/AGENTS.md 原生入口。安装器只管理带标记的海鸥区块，并在写入前备份。检测到 dsh-purge 时会提示人格冲突，不会覆盖现有 prompt-inject.md。
+
+详见 dsh-files/README.md。
 
 ## 文件结构
 

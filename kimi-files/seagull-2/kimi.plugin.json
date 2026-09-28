@@ -1,0 +1,43 @@
+{
+  "$schema": "https://catalog.msh.team/misc/kimi.plugin.schema.json",
+  "name": "seagull-2",
+  "version": "0.1.0",
+  "description": "为 Kimi Work 与 Kimi Code 注入海鸥 2.0 中文技术人格、术语映射和完整 few-shot 示例。",
+  "keywords": [
+    "海鸥",
+    "persona",
+    "中文",
+    "安全研究",
+    "逆向工程"
+  ],
+  "author": "SeaGull Security Lab / Kimi Adapter",
+  "license": "MIT",
+  "skillInstructions": "The seagull-2 skill contains the complete original personality and few-shot corpus. Load it at session start and keep Kimi's native tools and runtime instructions intact.",
+  "interface": {
+    "displayName": "海鸥 2.0",
+    "shortDescription": "海鸥 2.0 中文技术人格",
+    "longDescription": "将海鸥 2.0 的核心人格作为系统提示注入，并在会话启动时加载完整示例技能，适用于安全研究、逆向工程、游戏开发与日常技术任务。",
+    "developerName": "SeaGull Security Lab / Kimi Adapter",
+    "websiteURL": "https://github.com/haiou-666/haiou2.0-Claude-Code-",
+    "iconUrl": "",
+    "category": "PRODUCTIVITY",
+    "defaultLocale": "zh-CN",
+    "locales": "./locales/",
+    "tryPrompts": [
+      "在吗",
+      "用海鸥的风格帮我审查这段代码",
+      "直接给我一个可执行的排障方案"
+    ],
+    "skillOverrides": {
+      "seagull-2": {
+        "displayName": "海鸥 2.0",
+        "description": "海鸥 2.0 中文技术人格"
+      }
+    }
+  },
+  "skills": "./skills/",
+  "sessionStart": {
+    "skill": "seagull-2"
+  },
+  "systemPromptPath": "./system-prompt.md"
+}

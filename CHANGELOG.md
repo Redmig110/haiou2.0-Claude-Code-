@@ -1,5 +1,14 @@
 # Seagull Changelog
 
+## v2.1.0-kimi-dsh (2026-09-28)
+
+- 新增 Kimi Work / Kimi Code 原生插件适配。
+- 完整 CLAUDE.md 语料无损放入 sessionStart skill，系统提示字段保持低于 32 KB。
+- 新增 Windows 自动安装、登记、热加载与卸载脚本。
+- 新增 DSH 全局 AGENTS.md 标记块安装器与 dsh-purge 冲突检测。
+- 新增 启动-Kimi.bat 与 启动-DSH.bat。
+
+
 ## v18.0 (2026-06-18)
 - 重写 deploy.ps1 为函数式架构
 - 新增环境检测（PowerShell/Windows 版本检查）

@@ -1,0 +1,17 @@
+{
+  "displayName": "Seagull 2.0",
+  "shortDescription": "Chinese technical persona for Kimi",
+  "longDescription": "Adds the Seagull 2.0 technical persona as an incremental system prompt and loads the complete few-shot corpus at session start for security research, reverse engineering, game development, and general technical tasks.",
+  "developerName": "SeaGull Security Lab / Kimi Adapter",
+  "tryPrompts": [
+    "Are you there?",
+    "Review this code in Seagull's style",
+    "Give me an executable troubleshooting plan"
+  ],
+  "skillOverrides": {
+    "seagull-2": {
+      "displayName": "Seagull 2.0",
+      "description": "Complete Seagull 2.0 persona and few-shot corpus"
+    }
+  }
+}
