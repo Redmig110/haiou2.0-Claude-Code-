@@ -123,7 +123,7 @@ ws.on('open', async () => {
     } else if (action === 'set-override') {
       const content = fs.readFileSync(pluginId, 'utf8');
       result = await request('prompts.systemPromptOverride.set', { content });
-      console.log(JSON.stringify({ ok: true, action, bytes: Buffer.byteLength(content), state: result }, null, 2));
+      console.log(JSON.stringify({ ok: true, action, bytes: Buffer.byteLength(content), state: { mode: result.mode, enabled: result.enabled, sha256: result.sha256, utf8Bytes: result.utf8Bytes, effect: result.effect } }, null, 2));
     } else if (action === 'restore-override') {
       const content = fs.readFileSync(pluginId, 'utf8');
       const expectedSha = crypto.createHash('sha256').update(content).digest('hex');

@@ -9,6 +9,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+$onWindows = $env:OS -eq 'Windows_NT' -or [Environment]::OSVersion.Platform -eq [PlatformID]::Win32NT
 $driveRoots = @(Get-PSDrive -PSProvider FileSystem | ForEach-Object { $_.Root })
 
 function Write-Utf8NoBom([string]$Path, [string]$Content) {
@@ -25,6 +26,16 @@ $workReloadPending = $false
 if ($SkipKimiWork) {
     Write-Host 'Skipping Kimi Work removal.' -ForegroundColor DarkGray
 } elseif ($KimiShareDir) {
+    if ($onWindows) {
+        $stableDir = Join-Path $HOME '.kimi-seagull'
+        $pidPath = Join-Path $stableDir 'watcher.pid'
+        if (Test-Path $pidPath) {
+            $watcherPid = Get-Content -Raw $pidPath
+            if ($watcherPid -match '^\d+$') { Stop-Process -Id ([int]$watcherPid) -Force -ErrorAction SilentlyContinue }
+        }
+        $startupFile = Join-Path $env:APPDATA 'Microsoft\Windows\Start Menu\Programs\Startup\SeaGull-Kimi-Override.cmd'
+        if (Test-Path $startupFile) { Remove-Item -LiteralPath $startupFile -Force }
+    }
     if (!$DaimonCli -or !$NodeBin) {
         Write-Warning 'Kimi Work was detected, but Daimon CLI or Node could not be resolved. Pass -DaimonCli and -NodeBin, then retry.'
         $workFailed = $true
@@ -52,6 +63,10 @@ if ($SkipKimiWork) {
             if ($LASTEXITCODE -ne 0) {
                 Write-Warning 'Kimi Work system prompt override restore failed.'
                 $workFailed = $true
+            }
+
+            if ($onWindows) {
+                if (Test-Path $stableDir) { Remove-Item -LiteralPath $stableDir -Recurse -Force }
             }
         }
     }

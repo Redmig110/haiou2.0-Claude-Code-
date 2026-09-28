@@ -6,6 +6,7 @@
 - 完整 CLAUDE.md 语料无损放入 sessionStart skill，系统提示字段保持低于 32 KB。
 - 新增 Windows 自动安装、登记、热加载与卸载脚本。
 - Kimi Work 改用官方 systemPromptOverride 强制应用完整配置，并提供哈希匹配的安全恢复。
+- 新增 Windows Startup 隐藏 watcher，在 Kimi Desktop 重启后自动重放内存态 systemPromptOverride。
 - 新增 DSH 全局 AGENTS.md 标记块安装器与 dsh-purge 冲突检测。
 - 新增 启动-Kimi.bat 与 启动-DSH.bat。
 

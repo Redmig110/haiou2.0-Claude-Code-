@@ -9,6 +9,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+$onWindows = $env:OS -eq 'Windows_NT' -or [Environment]::OSVersion.Platform -eq [PlatformID]::Win32NT
 $pluginDir = Join-Path $PSScriptRoot 'seagull-2'
 if (!(Test-Path (Join-Path $pluginDir 'kimi.plugin.json'))) { throw "Kimi plugin manifest not found: $pluginDir" }
 
@@ -93,6 +94,34 @@ if (!$SkipKimiWork) {
             & $NodeBin (Join-Path $PSScriptRoot 'personal-plugin-control.cjs') set-override $statePath $wsModule $overridePath
             if ($LASTEXITCODE -ne 0) { throw 'Kimi Work system prompt override failed.' }
             Write-Host 'Kimi Work full system prompt override enabled. It applies to new conversations.' -ForegroundColor Green
+
+            if ($onWindows) {
+                $stableDir = Join-Path $HOME '.kimi-seagull'
+                New-Item -ItemType Directory -Force -Path $stableDir | Out-Null
+                $stableHelper = Join-Path $stableDir 'personal-plugin-control.cjs'
+                $stablePrompt = Join-Path $stableDir 'full-system-prompt.md'
+                $stableWatcher = Join-Path $stableDir 'watch-kimi-override.ps1'
+                $watcherLog = Join-Path $stableDir 'watcher.log'
+                Copy-Item (Join-Path $PSScriptRoot 'personal-plugin-control.cjs') $stableHelper -Force
+                Copy-Item $overridePath $stablePrompt -Force
+                Copy-Item (Join-Path $PSScriptRoot 'watch-kimi-override.ps1') $stableWatcher -Force
+
+                $pidPath = Join-Path $stableDir 'watcher.pid'
+                $watchCommand = 'powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File "' + $stableWatcher + '" -StatePath "' + $statePath + '" -NodeBin "' + $NodeBin + '" -HelperPath "' + $stableHelper + '" -PromptPath "' + $stablePrompt + '" -WsModulePath "' + $wsModule + '" -LogPath "' + $watcherLog + '" -PidPath "' + $pidPath + '"'
+                $startupDir = Join-Path $env:APPDATA 'Microsoft\Windows\Start Menu\Programs\Startup'
+                New-Item -ItemType Directory -Force -Path $startupDir | Out-Null
+                $startupFile = Join-Path $startupDir 'SeaGull-Kimi-Override.cmd'
+                $startupContent = '@echo off' + [Environment]::NewLine + 'start "" /min ' + $watchCommand + [Environment]::NewLine
+                Write-Utf8NoBom $startupFile $startupContent
+
+                if (Test-Path $pidPath) {
+                    $oldPid = Get-Content -Raw $pidPath
+                    if ($oldPid -match '^\d+$') { Stop-Process -Id ([int]$oldPid) -Force -ErrorAction SilentlyContinue }
+                }
+                $watchArgs = '-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File "' + $stableWatcher + '" -StatePath "' + $statePath + '" -NodeBin "' + $NodeBin + '" -HelperPath "' + $stableHelper + '" -PromptPath "' + $stablePrompt + '" -WsModulePath "' + $wsModule + '" -LogPath "' + $watcherLog + '" -PidPath "' + $pidPath + '"'
+                Start-Process -FilePath 'powershell.exe' -ArgumentList $watchArgs -WindowStyle Hidden | Out-Null
+                Write-Host 'Persistent Kimi override watcher installed.' -ForegroundColor Green
+            }
         } else {
             Write-Host 'Kimi Work plugin registered. Open the Personal plugins tab and install SeaGull 2.0.' -ForegroundColor Yellow
             Write-Host 'kimi-work://plugin?id=seagull-2'
