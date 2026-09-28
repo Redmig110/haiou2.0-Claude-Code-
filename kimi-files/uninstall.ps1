@@ -46,6 +46,13 @@ if ($SkipKimiWork) {
                 Write-Warning 'Kimi Work plugin removal failed. Start Kimi Desktop and retry.'
                 $workFailed = $true
             }
+
+            $overridePath = Join-Path $PSScriptRoot 'seagull-2\full-system-prompt.md'
+            & $NodeBin (Join-Path $PSScriptRoot 'personal-plugin-control.cjs') restore-override $statePath $wsModule $overridePath
+            if ($LASTEXITCODE -ne 0) {
+                Write-Warning 'Kimi Work system prompt override restore failed.'
+                $workFailed = $true
+            }
         }
     }
 } else {

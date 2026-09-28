@@ -72,6 +72,7 @@ Kimi 不再把 58 KB 语料直接塞进 AGENTS.md。适配版采用无损分层�
 - 完整原始 few-shot 语料保存在自动加载的 sessionStart.skill；
 - Kimi 原生系统提示、工具、权限、Skills 和插件均保留；
 - 普通 Kimi Desktop 的 Work 模式与独立 Kimi Code 使用同一个插件源；普通 Chat 仅支持项目指令，不会自动全局生效。
+- Kimi Work 安装器会启用官方 systemPromptOverride，完整替换默认提示组合，但保留动态上下文、工具与权限；仅对新会话生效。
 
 详见 kimi-files/README.md。
 

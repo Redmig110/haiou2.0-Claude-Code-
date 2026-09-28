@@ -87,7 +87,12 @@ if (!$SkipKimiWork) {
             $controlExit = $LASTEXITCODE
             if ($controlExit -eq 3) { Write-Warning 'Kimi Work plugin installed, but active-session reload failed. Start a new conversation or restart Kimi Desktop.' }
             elseif ($controlExit -ne 0) { throw 'Kimi Work plugin control installation failed.' }
-            else { Write-Host 'Kimi Work installed and active sessions reloaded.' -ForegroundColor Green }
+            else { Write-Host 'Kimi Work plugin installed.' -ForegroundColor Green }
+
+            $overridePath = Join-Path $pluginDir 'full-system-prompt.md'
+            & $NodeBin (Join-Path $PSScriptRoot 'personal-plugin-control.cjs') set-override $statePath $wsModule $overridePath
+            if ($LASTEXITCODE -ne 0) { throw 'Kimi Work system prompt override failed.' }
+            Write-Host 'Kimi Work full system prompt override enabled. It applies to new conversations.' -ForegroundColor Green
         } else {
             Write-Host 'Kimi Work plugin registered. Open the Personal plugins tab and install SeaGull 2.0.' -ForegroundColor Yellow
             Write-Host 'kimi-work://plugin?id=seagull-2'

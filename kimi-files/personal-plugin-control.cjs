@@ -1,15 +1,19 @@
 const fs = require('fs');
+const crypto = require('crypto');
 
 const [action, statePath, wsModulePath, pluginId = 'seagull-2'] = process.argv.slice(2);
 if (!action || !statePath || !wsModulePath) {
   console.error('usage: node personal-plugin-control.cjs <install|remove|status> <runner.state.json> <ws-module-path> [plugin-id]');
   process.exit(2);
 }
-if (!['install', 'remove', 'status'].includes(action)) {
+if (!['install', 'remove', 'status', 'set-override', 'restore-override'].includes(action)) {
   throw new Error('Unsupported action: ' + action);
 }
-if (!/^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/.test(pluginId)) {
+if (['install', 'remove', 'status'].includes(action) && !/^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/.test(pluginId)) {
   throw new Error('Invalid plugin id: ' + pluginId);
+}
+if (['set-override', 'restore-override'].includes(action) && !fs.existsSync(pluginId)) {
+  throw new Error('System prompt file not found: ' + pluginId);
 }
 
 const WebSocket = require(wsModulePath);
@@ -116,6 +120,22 @@ ws.on('open', async () => {
       if (!Array.isArray(list)) throw new Error('Invalid personal plugin list response');
       result = list.find((item) => item.id === pluginId) || null;
       console.log(JSON.stringify({ ok: true, action, plugin: result }, null, 2));
+    } else if (action === 'set-override') {
+      const content = fs.readFileSync(pluginId, 'utf8');
+      result = await request('prompts.systemPromptOverride.set', { content });
+      console.log(JSON.stringify({ ok: true, action, bytes: Buffer.byteLength(content), state: result }, null, 2));
+    } else if (action === 'restore-override') {
+      const content = fs.readFileSync(pluginId, 'utf8');
+      const expectedSha = crypto.createHash('sha256').update(content).digest('hex');
+      const current = await request('prompts.systemPromptOverride.get', {});
+      if (!current.enabled) {
+        console.log(JSON.stringify({ ok: true, action, restored: false, reason: 'override-not-enabled' }, null, 2));
+      } else if (current.sha256 !== expectedSha) {
+        console.log(JSON.stringify({ ok: true, action, restored: false, reason: 'override-owned-by-user', currentSha256: current.sha256 }, null, 2));
+      } else {
+        result = await request('prompts.systemPromptOverride.restoreDefault', {});
+        console.log(JSON.stringify({ ok: true, action, restored: true, state: result }, null, 2));
+      }
     }
     ws.close();
     const closeTimer = setTimeout(() => ws.terminate(), 1000);

@@ -6,12 +6,13 @@
 - skills/seagull-2/SKILL.md 保存完整 CLAUDE.md 和原始 few-shot 示例，没有删减。
 - sessionStart.skill 在每个新会话自动加载完整技能。
 - 不替换 Kimi 原生系统提示、工具、权限、Skills 或其他插件。
+- Kimi Work 使用官方 prompts.systemPromptOverride 替换默认提示组合；动态上下文、工具和权限保持不变，且只影响新会话。
 
 Windows 安装：
 
     powershell -ExecutionPolicy Bypass -File .\kimi-files\install.ps1
 
-脚本会安装到 Kimi Code，并登记、安装到普通 Kimi Desktop 的 Kimi Work 运行时。Kimi Work 会热刷新活跃会话；Kimi Code 安装后需重启应用或执行 /plugins reload，并新建会话。
+脚本会安装到 Kimi Code，并登记、安装到普通 Kimi Desktop 的 Kimi Work 运行时，同时启用完整 systemPromptOverride。两端都需要新建会话；Kimi Code 还需重启应用或执行 /plugins reload。
 
 非标准安装位置可传入 -DaimonCli、-NodeBin、-KimiShareDir 和 -KimiCodeHome 参数。安装和卸载均支持 -SkipKimiWork / -SkipKimiCode。卸载 Kimi Work 时需要先启动 Kimi Desktop，使本地控制端点可用。
 

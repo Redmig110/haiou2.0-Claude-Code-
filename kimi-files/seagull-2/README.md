@@ -4,3 +4,4 @@
 - skills/seagull-2/SKILL.md：完整原始人格与 完整原始 few-shot，59995 bytes，无删减。
 - sessionStart.skill：每个新会话自动加载完整技能。
 - 保留 Kimi 原生工具、权限、插件和运行时提示。
+- full-system-prompt.md：供 Kimi Work 官方 systemPromptOverride 使用，包含完整原始配置。
